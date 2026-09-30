@@ -1,0 +1,230 @@
+body{
+   font-family: "Montserrat", serif;
+   font-optical-sizing: auto;
+   font-style: normal;
+   transition: all 0.2s linear;
+}
+
+/* Navbar */
+.collapse{
+   background: white
+}
+
+ .navbar{
+   
+    height: 5rem;
+ }
+ .fa-compass{
+    color: #fe434d;
+    font-size: 2rem;
+ }
+ .nav-link{
+    color: #222222 !important;
+
+ }
+
+ /* Footer */
+
+footer{
+   width: 100%;
+   
+    background-color: aliceblue;
+    height: 5rem;
+    
+}
+ .fa-brands{
+    font-size: 1.4rem;
+ }
+ .f-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+ }
+.a-tags{
+    color: black;
+    text-decoration: none;
+ }
+ .a-tags:hover{
+    text-decoration: underline;
+ }
+
+ /* index */
+ .indexcontainer{
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr 1fr;
+   grid-row-gap: 10px;
+   
+   
+ }
+ 
+ 
+ 
+ .anchorTags{
+   text-decoration: none;
+   color: black;
+ }
+ .card-text p{
+  padding: 0px; 
+ }
+/* newListing */
+/* .newListingInputs{
+   width: 90%;
+   border: 2px solid black;
+   border-radius: 5px;
+} */
+.newListingSubmitButtonDiv{
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+}
+.add-btn{
+   border: none;
+   background-color:  #fe434d;
+   width: 100px;
+   border-radius: 4px;
+}
+/* update */
+.updateimg{
+   object-fit: cover;
+}
+.UpdateContainer{
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+}
+.updateImgDiv{
+   border: 2px solid black;
+   
+}
+.updateDivInfo{
+   width: 80%;
+   margin-left: 3rem;
+}
+/* .update-inputs{
+   border: 2px soild black;
+   width: 20rem;
+   margin-left: 2rem;
+   border-radius: 5px;
+} */
+.edit-btn{
+   width: 8rem;
+   background: #fe434d;
+   border: none;
+   border-radius: 5px;
+}
+/* route page */
+.operation-div{
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+}
+.edit-btn{
+   background: #fe434d;
+   margin-left: 3rem;
+   border: none;
+   border-radius: 2px;
+   width: 5rem;
+}
+.update-btns{
+   margin-left: 1rem;
+   border: none;
+   background: rgb(170, 170, 170);
+   border-radius: 2px;
+   width: 4rem;
+}
+.update-main-div{
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+.route-img{
+   border: 2px solid black;
+   width: 40rem;
+   height: 40rem;
+}
+.route-image{
+   width: 100%;
+   height: 100%;
+}
+.reviewCards{
+   width: 500px;
+   height: 100px;
+
+}
+.ratingStar{
+   color: white;
+   display: inline-block;
+}
+.reviewBlocks{
+   display: inline-block;
+}
+@media (max-width: 768px) {
+   .indexcontainer{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #Searchbutton i{
+      display: inline;
+      margin-right: 0.5rem;
+    }
+    #searchInput{
+      border-radius: 2rem;
+      padding: 0.5rem 3rem 0.5rem 3rem;
+      width: 100px;
+    }
+    /* .filter div{
+      display: none;
+      border: 2px solid black;
+      background-color: white;
+      width: 5rem;
+      position: absolute;
+      z-index: 2;
+      float: left;   
+      
+      flex-direction: column;
+      
+  }
+  .filters{
+   transform: translateX(-42px);
+   /* position: relative;
+   float: left;
+   margin-left: 0px;
+   border: 2px solid black;
+   width: 5rem;
+   
+   text-align: left;
+   opacity: 0.7;
+   cursor: pointer; */
+/* } */
+/* #opn-div{
+   display: block;
+}  */
+
+ }
+ 
+ @media (min-width: 769px) and (max-width: 1024px) {
+   /* Adjust styles for tablets */
+   .indexcontainer{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-row-gap: 10px;
+    }
+    #Searchbutton{
+      
+      background-color: #fe434d;
+      font-size: 8px;
+      color: white;
+      
+    }
+    #searchInput{
+      font-size: 0.8rem;
+      width: 8rem;
+      border-radius: 2rem;
+      
+    }
+    #AirbnbLink{
+      font-size: 0.9rem;
+    }
+ }
