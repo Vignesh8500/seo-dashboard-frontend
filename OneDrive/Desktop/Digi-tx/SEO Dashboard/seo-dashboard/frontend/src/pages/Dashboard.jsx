@@ -125,9 +125,14 @@ export default function Dashboard() {
           <div className="metric-value">{totalSessions.toLocaleString()}</div>
         </div>
         <div className="card">
-          <div className="metric-label">Conversions (28 days)</div>
-          <div className="metric-value">{totalConversions.toLocaleString()}</div>
-        </div>
+  <div className="metric-label">Key events (28 days)</div>
+  <div className="metric-value">{totalConversions.toLocaleString()}</div>
+  {totalConversions === 0 && (
+    <p className="form-hint" style={{ marginTop: 6 }}>
+      0 usually means no events are marked as key events in GA4 yet.
+    </p>
+  )}
+</div>
       </div>
 
       <div className="card" style={{ marginBottom: 16 }}>
