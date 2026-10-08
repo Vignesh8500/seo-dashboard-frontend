@@ -246,3 +246,58 @@ main { flex: 1; padding: 24px; max-width: 1200px; width: 100%; margin: 0 auto; }
 .worldmap-bubble:hover {
   fill-opacity: 0.85;
 }
+
+/* ---------- Auth + admin screens ---------- */
+a.btn { text-decoration: none; }
+.btn-sm { padding: 6px 10px; font-size: 13px; }
+
+.topbar { flex-wrap: wrap; gap: 10px; }
+.topbar .brand { text-decoration: none; color: var(--text); }
+.topbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.user-chip { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); }
+
+.role-badge {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 2px 7px; border-radius: 10px; background: var(--surface-2);
+  color: var(--text-dim); border: 1px solid var(--border);
+}
+.role-badge.admin { color: var(--accent); border-color: var(--accent); }
+
+.login-wrap { max-width: 400px; margin: 8vh auto 0; }
+.login-wrap .card { padding: 28px; }
+
+.input-with-toggle { position: relative; }
+.input-with-toggle input { padding-right: 42px; }
+.input-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 6px; display: flex;
+}
+.input-toggle:hover { color: var(--text); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1.4fr 140px; gap: 12px; }
+@media (max-width: 800px) { .form-row { grid-template-columns: 1fr; } }
+
+.form-group select {
+  width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font-size: 14px;
+}
+.form-group select:focus { outline: none; border-color: var(--accent); }
+
+.user-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.user-row:last-child { border-bottom: none; }
+.user-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.inline-input {
+  padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font-size: 13px; width: 180px;
+}
+.inline-input:focus { outline: none; border-color: var(--accent); }
+
+.cred-box {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px;
+  color: var(--text); background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; margin: 10px 0; line-height: 1.7; word-break: break-all;
+}
