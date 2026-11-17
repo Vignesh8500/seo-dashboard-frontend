@@ -8,6 +8,7 @@ import ClientList from './pages/ClientList';
 import AddClient from './pages/AddClient';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
+import Digests from './pages/Digests';
 
 function RequireAuth({ children, adminOnly = false }) {
   const { user, loading, bootError, retry } = useAuth();
@@ -43,7 +44,11 @@ function Topbar({ theme, setTheme }) {
 
       <div className="topbar-actions">
         {user?.role === 'admin' && (
-          <Link to="/users" className="btn btn-secondary btn-sm"><UsersIcon size={14} /> Users</Link>
+          <>
+          <Link to="/digests" className="btn btn-secondary btn-sm">Digests</Link>
+            <Link to="/users" className="btn btn-secondary btn-sm"><UsersIcon size={14} /> Users</Link>
+            
+          </>
         )}
         {user && (
           <>
@@ -84,6 +89,7 @@ export default function App() {
               <Route path="/" element={<RequireAuth><ClientList /></RequireAuth>} />
               <Route path="/add" element={<RequireAuth adminOnly><AddClient /></RequireAuth>} />
               <Route path="/users" element={<RequireAuth adminOnly><Users /></RequireAuth>} />
+              <Route path="/digests" element={<RequireAuth adminOnly><Digests /></RequireAuth>} />
               <Route path="/dashboard/:clientId" element={<RequireAuth><Dashboard /></RequireAuth>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

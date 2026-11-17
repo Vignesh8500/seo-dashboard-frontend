@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import DeviceIcon from '../DeviceIcon';
 import WorldMap from '../WorldMap';
+import Changes from '../components/Changes';
 
 function parseGA4Date(dateStr) {
   const year = dateStr.slice(0, 4);
@@ -137,6 +138,7 @@ export default function Dashboard() {
 
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="metric-label" style={{ marginBottom: 12 }}>Traffic trend — GA4</div>
+        <Changes clientId={clientId} />
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={chartData}>
             <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />

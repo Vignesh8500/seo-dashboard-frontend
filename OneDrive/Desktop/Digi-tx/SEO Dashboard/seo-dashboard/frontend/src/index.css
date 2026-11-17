@@ -301,3 +301,75 @@ a.btn { text-decoration: none; }
   color: var(--text); background: var(--surface-2); border: 1px solid var(--border);
   border-radius: 8px; padding: 12px 14px; margin: 10px 0; line-height: 1.7; word-break: break-all;
 }
+
+
+/* ---------- What changed ---------- */
+.controls-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.seg-btn {
+  background: var(--surface-2); color: var(--text-dim); border: none; border-right: 1px solid var(--border);
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+}
+.seg-btn:last-child { border-right: none; }
+.seg-btn.active { background: var(--accent); color: #fff; }
+.date-inputs { display: flex; align-items: center; gap: 8px; }
+.date-inputs input, .ctl input[type="number"] {
+  padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font-size: 13px;
+}
+.ctl { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); }
+.ctl input[type="number"] { width: 64px; }
+.ctl-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 16px 0; }
+.kpi { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.kpi-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 2px 0 4px; }
+.delta { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; }
+.delta-good { color: var(--success); }
+.delta-bad { color: var(--error); }
+.delta-flat { color: var(--text-dim); }
+
+.mover-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--text-dim); margin: 4px 0 6px;
+}
+.mover-section { margin-top: 18px; }
+
+
+
+/* ---------- Weekly digests + explanations ---------- */
+.field-input, .field-textarea {
+  width: 100%; box-sizing: border-box; padding: 9px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+  font-size: 14px; font-family: inherit;
+}
+.field-textarea { resize: vertical; line-height: 1.5; }
+.field-input:focus, .field-textarea:focus { outline: none; border-color: var(--accent); }
+.field-input:disabled, .field-textarea:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.digest-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.status-pill { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-dim); }
+.status-draft { color: var(--accent); border-color: var(--accent); }
+.status-sent { color: var(--success); border-color: var(--success); }
+.status-failed { color: var(--error); border-color: var(--error); }
+
+.alert-ok { background: rgba(60,170,110,0.1); color: var(--success); border: 1px solid var(--success); padding: 10px 14px; border-radius: 8px; font-size: 13px; }
+
+.mover-item { margin-bottom: 8px; }
+.why { font-size: 12px; color: var(--text-dim); margin: 2px 0 0; line-height: 1.4; }
+.why-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 0 0 16px; }
+.why-box .why { margin: 6px 0 0; font-size: 13px; color: var(--text); }
+
+
+
+/* ---------- switches + testing panel ---------- */
+.switch-row { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; }
+.switch { position: relative; width: 38px; height: 22px; flex: none; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch-track { position: absolute; inset: 0; background: var(--border); border-radius: 999px; transition: background 0.15s; }
+.switch-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
+.switch input:checked + .switch-track { background: var(--accent); }
+.switch input:checked + .switch-track::after { transform: translateX(16px); }
+.switch input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch input:disabled + .switch-track { opacity: 0.5; }
+.test-panel { border: 1px dashed var(--accent); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
