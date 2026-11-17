@@ -12,6 +12,60 @@ function generatePassword(length = 14) {
   return Array.from(values, v => ALPHABET[v % ALPHABET.length]).join('');
 }
 
+
+function ClientAccess({ user, clients, onSaved }) {
+  const [all, setAll] = useState(user.allClients);
+  const [ids, setIds] = useState(user.clientIds);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+
+  const sameIds = ids.slice().sort().join() === user.clientIds.slice().sort().join();
+  const dirty = all !== user.allClients || (!all && !sameIds);
+
+  const toggle = id => setIds(list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]));
+
+  async function save() {
+    setBusy(true);
+    setMsg(null);
+    try {
+      await api.put(`/api/users/${user.id}/access`, { allClients: all, clientIds: ids });
+      setMsg({ ok: true, text: 'Saved.' });
+      onSaved();
+    } catch (err) {
+      setMsg({ ok: false, text: err.response?.data?.message || 'Could not save access.' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="access-panel">
+      <div className="metric-label" style={{ marginBottom: 6 }}>Clients this user can view</div>
+      <label className="check-row">
+        <input type="radio" name={`access-${user.id}`} checked={all} onChange={() => setAll(true)} /> All clients
+      </label>
+      <label className="check-row">
+        <input type="radio" name={`access-${user.id}`} checked={!all} onChange={() => setAll(false)} /> Only selected clients
+      </label>
+      {!all && (
+        <div className="access-list">
+          {clients.length === 0 && <span className="subtitle">No clients yet.</span>}
+          {clients.map(c => (
+            <label className="check-row" key={c.id}>
+              <input type="checkbox" checked={ids.includes(c.id)} onChange={() => toggle(c.id)} /> {c.name}
+            </label>
+          ))}
+          {ids.length === 0 && <span className="subtitle">None selected: this user will see no clients.</span>}
+        </div>
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
+        <button type="button" className="btn btn-sm" disabled={busy || !dirty} onClick={save}>Save access</button>
+        {msg && <span className="subtitle" style={{ color: msg.ok ? 'var(--success)' : 'var(--error)' }}>{msg.text}</span>}
+      </div>
+    </div>
+  );
+}
+
 export default function Users() {
   const { user: me } = useAuth();
   const [users, setUsers] = useState(null);
@@ -22,12 +76,13 @@ export default function Users() {
   const [copied, setCopied] = useState(false);
   const [resetId, setResetId] = useState(null);
   const [resetPw, setResetPw] = useState('');
+  const [clients, setClients] = useState([]);
 
   function load() {
-    api.get('/api/users')
-      .then(res => setUsers(res.data))
-      .catch(err => setError(err.response?.data?.message || 'Could not load users.'));
-  }
+  Promise.all([api.get('/api/users'), api.get('/api/clients')])
+    .then(([u, c]) => { setUsers(u.data); setClients(c.data); })
+    .catch(err => setError(err.response?.data?.message || 'Could not load users.'));
+}
 
   useEffect(load, []);
 
@@ -164,48 +219,59 @@ export default function Users() {
         <div className="metric-label" style={{ marginBottom: 4 }}>Accounts</div>
         {!users && !error && <p className="subtitle">Loading…</p>}
         {users?.map(u => {
-          const isMe = u.username === me.username;
-          return (
-            <div className="user-row" key={u.id}>
-              <div>
-                <span style={{ fontWeight: 600 }}>{u.username}</span>{' '}
-                <span className={`role-badge ${u.role}`}>{u.role}</span>
-                {isMe && <span className="subtitle" style={{ marginLeft: 8 }}>(you)</span>}
-              </div>
+  const isMe = u.username === me.username;
+  return (
+    <div className="user-block" key={u.id}>
+      <div className="user-row">
+        <div>
+          <span style={{ fontWeight: 600 }}>{u.username}</span>{' '}
+          <span className={`role-badge ${u.role}`}>{u.role}</span>
+          {isMe && <span className="subtitle" style={{ marginLeft: 8 }}>(you)</span>}
+        </div>
 
-              <div className="user-actions">
-                {resetId === u.id ? (
-                  <>
-                    <input
-                      className="inline-input"
-                      type="text"
-                      autoComplete="new-password"
-                      placeholder="New password (8+)"
-                      value={resetPw}
-                      onChange={e => setResetPw(e.target.value)}
-                    />
-                    <button type="button" className="btn btn-secondary btn-sm" title="Generate" onClick={() => setResetPw(generatePassword())}>
-                      <RefreshCw size={14} />
-                    </button>
-                    <button type="button" className="btn btn-sm" disabled={resetPw.length < 8} onClick={() => handleReset(u)}>Save</button>
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setResetId(null); setResetPw(''); }}>Cancel</button>
-                  </>
-                ) : (
-                  <>
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setResetId(u.id); setResetPw(''); }}>
-                      Reset password
-                    </button>
-                    {!isMe && (
-                      <button type="button" className="btn btn-secondary btn-sm" title="Delete user" onClick={() => handleDelete(u)}>
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        <div className="user-actions">
+          {resetId === u.id ? (
+            <>
+              <input
+                className="inline-input"
+                type="text"
+                autoComplete="new-password"
+                placeholder="New password (8+)"
+                value={resetPw}
+                onChange={e => setResetPw(e.target.value)}
+              />
+              <button type="button" className="btn btn-secondary btn-sm" title="Generate" onClick={() => setResetPw(generatePassword())}>
+                <RefreshCw size={14} />
+              </button>
+              <button type="button" className="btn btn-sm" disabled={resetPw.length < 8} onClick={() => handleReset(u)}>Save</button>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setResetId(null); setResetPw(''); }}>Cancel</button>
+            </>
+          ) : (
+            <>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setResetId(u.id); setResetPw(''); }}>
+                Reset password
+              </button>
+              {!isMe && (
+                <button type="button" className="btn btn-secondary btn-sm" title="Delete user" onClick={() => handleDelete(u)}>
+                  <Trash2 size={14} />
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {u.role !== 'admin' && (
+        <ClientAccess
+          key={`${u.id}-${u.allClients}-${u.clientIds.join(',')}`}
+          user={u}
+          clients={clients}
+          onSaved={load}
+        />
+      )}
+    </div>
+  );
+})}
       </div>
     </div>
   );

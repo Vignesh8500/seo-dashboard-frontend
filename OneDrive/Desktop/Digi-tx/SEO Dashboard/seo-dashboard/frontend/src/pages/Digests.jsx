@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../api';
 
-const STATUS_LABEL = { draft: 'Draft', sending: 'Sending…', sent: 'Sent', failed: 'Needs retry', discarded: 'Discarded' };
+const STATUS_LABEL = { draft: 'Draft', sending: 'Sending…', sent: '✓ Sent', failed: 'Needs retry', discarded: 'Discarded' };
 
 const fmt = s => (s ? new Date(`${s}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '');
 const errText = err =>
@@ -24,12 +24,13 @@ function Toggle({ checked, onChange, disabled, label }) {
   );
 }
 
-function DeliveryLine({ name, info }) {
+function DeliveryTag({ name, info }) {
   if (!info?.status) return null;
+  const ok = info.status === 'sent';
   return (
     <p className="form-hint">
-      {name}: {info.status === 'sent' ? 'sent' : 'failed'}
-      {info.at ? ` at ${new Date(info.at).toLocaleString()}` : ''}
+      <span className={`tag ${ok ? 'tag-ok' : 'tag-bad'}`}>{ok ? '✓' : '!'} {name} {ok ? 'sent' : 'failed'}</span>
+      {info.at ? ` ${new Date(info.at).toLocaleString()}` : ''}
       {info.error ? ` — ${info.error}` : ''}
     </p>
   );
@@ -114,8 +115,8 @@ function DigestCard({ digest, testing, testEmail, testSlack, onChanged, setNotic
         <textarea className="field-textarea" rows={6} value={slackText} disabled={!editable || busy} onChange={e => setSlackText(e.target.value)} />
       </div>
 
-      <DeliveryLine name="Email" info={digest.delivery?.email} />
-      <DeliveryLine name="Slack" info={digest.delivery?.slack} />
+      <DeliveryTag name="Email" info={digest.delivery?.email} />
+        <DeliveryTag name="Slack" info={digest.delivery?.slack} />
       {digest.status === 'sent' && digest.approvedBy && <p className="form-hint">Approved by {digest.approvedBy}.</p>}
       {error && <div className="alert alert-error" style={{ marginTop: 8 }}>{error}</div>}
 
@@ -140,6 +141,17 @@ function DigestCard({ digest, testing, testEmail, testSlack, onChanged, setNotic
           {!testing && !digest.weeklyReport && <span className="subtitle">Weekly reports are OFF for this client. Turn on Testing mode to send a test, or switch them on in Delivery settings.</span>}
         </div>
       )}
+      {digest.status === 'discarded' && (
+  <div className="controls-row" style={{ marginTop: 12, marginBottom: 0 }}>
+    <button
+      className="btn btn-secondary btn-sm"
+      disabled={busy}
+      onClick={() => window.confirm('Delete this discarded draft permanently?') && run(async () => { await api.delete(`/api/digests/${digest.id}`); await onChanged(); })}
+    >
+      Delete
+    </button>
+  </div>
+)}
     </div>
   );
 }
@@ -184,21 +196,33 @@ function DeliveryRow({ row, onSaved, setNotice }) {
 
       <div className="form-group" style={{ marginTop: 14 }}>
         <Toggle checked={row.emailEnabled} disabled={busy} label="Send by email (main)" onChange={v => save({ emailEnabled: v })} />
-        <input className="field-input" style={{ marginTop: 8 }} value={emails} onChange={e => setEmails(e.target.value)} placeholder="name@company.com, other@company.com" />
+        <input
+            className="field-input"
+            style={{ marginTop: 8 }}
+            type="text"
+            name="digest-recipients"
+            autoComplete="off"
+            value={emails}
+            onChange={e => setEmails(e.target.value)}
+            placeholder="name@company.com, other@company.com"
+            />
         <p className="form-hint">Separate with commas. Up to 10. Everyone listed sees the other addresses.</p>
       </div>
 
       <div className="form-group">
         <Toggle checked={row.slackEnabled} disabled={busy} label="Also send to Slack (optional)" onChange={v => save({ slackEnabled: v })} />
         <input
-          className="field-input"
-          style={{ marginTop: 8 }}
-          type="password"
-          autoComplete="off"
-          placeholder={row.hasWebhook ? `Saved (${row.webhookHint}). Paste a new URL to replace it.` : 'https://hooks.slack.com/services/… (leave empty to skip Slack)'}
-          value={webhook}
-          onChange={e => setWebhook(e.target.value)}
-        />
+            className="field-input"
+            style={{ marginTop: 8, WebkitTextSecurity: 'disc' }}
+            type="text"
+            name="slack-webhook-url"
+            autoComplete="off"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            placeholder={row.hasWebhook ? `Saved (${row.webhookHint}). Paste a new URL to replace it.` : 'https://hooks.slack.com/services/… (leave empty to skip Slack)'}
+            value={webhook}
+            onChange={e => setWebhook(e.target.value)}
+            />
       </div>
 
       {error && <div className="alert alert-error" style={{ marginBottom: 8 }}>{error}</div>}
