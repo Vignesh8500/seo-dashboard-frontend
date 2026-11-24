@@ -108,7 +108,8 @@ function DigestCard({ digest, testing, testEmail, testSlack, onChanged, setNotic
       </div>
       <div className="form-group">
         <label>Email body (main)</label>
-        <textarea className="field-textarea" rows={10} value={emailBody} disabled={!editable || busy} onChange={e => setEmailBody(e.target.value)} />
+        <textarea className="field-textarea" rows={18} value={emailBody} disabled={!editable || busy} onChange={e => setEmailBody(e.target.value)} />
+          <p className="form-hint">The dashboard link, login details and sign-off are added automatically when the email is sent.</p>
       </div>
       <div className="form-group">
         <label>Slack message (optional)</label>
@@ -161,6 +162,8 @@ function DeliveryRow({ row, onSaved, setNotice }) {
   const [emails, setEmails] = useState((row.emailRecipients || []).join(', '));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [loginUser, setLoginUser] = useState(row.loginUsername || '');
+  const [loginPw, setLoginPw] = useState('');
 
   async function save(body, message) {
     setBusy(true);
@@ -168,6 +171,7 @@ function DeliveryRow({ row, onSaved, setNotice }) {
     try {
       await api.put(`/api/clients/${row.id}/delivery`, body);
       if ('slackWebhookUrl' in body) setWebhook('');
+      if ('loginPassword' in body) setLoginPw('');
       setNotice(message || `Saved ${row.name}.`);
       await onSaved();
     } catch (err) {
@@ -225,10 +229,54 @@ function DeliveryRow({ row, onSaved, setNotice }) {
             />
       </div>
 
+      <div className="form-group">
+  <label>Dashboard login shown in the email (optional)</label>
+  <input
+    className="field-input"
+    type="text"
+    name="dashboard-username"
+    autoComplete="off"
+    placeholder="Username"
+    value={loginUser}
+    onChange={e => setLoginUser(e.target.value)}
+  />
+  <input
+    className="field-input"
+    style={{ marginTop: 8, WebkitTextSecurity: 'disc' }}
+    type="text"
+    name="dashboard-password-once"
+    autoComplete="off"
+    data-lpignore="true"
+    data-1p-ignore="true"
+    placeholder={row.hasLoginPassword ? 'A password is saved. Type a new one to replace it.' : 'Password (optional)'}
+    value={loginPw}
+    onChange={e => setLoginPw(e.target.value)}
+  />
+  <p className="form-hint">
+    The dashboard link is added automatically. The password goes out with the next real email only, then it is deleted
+    from the server. It is never shown in drafts or sent to Slack.
+  </p>
+  {row.hasLoginPassword && (
+    <button
+      type="button"
+      className="btn btn-secondary btn-sm"
+      disabled={busy}
+      onClick={() => window.confirm('Delete the saved password?') && save({ loginPassword: '' }, 'Saved password deleted.')}
+    >
+      Delete saved password
+    </button>
+  )}
+</div>
+
       {error && <div className="alert alert-error" style={{ marginBottom: 8 }}>{error}</div>}
       <div className="controls-row" style={{ marginBottom: 0 }}>
-        <button className="btn btn-sm" disabled={busy} onClick={() => save({ ...(webhook.trim() ? { slackWebhookUrl: webhook.trim() } : {}), emailRecipients: emails })}>
-          Save emails / webhook
+        <button className="btn btn-sm" disabled={busy} onClick={() => save({
+  ...(webhook.trim() ? { slackWebhookUrl: webhook.trim() } : {}),
+  emailRecipients: emails,
+  loginUsername: loginUser,
+  ...(loginPw.trim() ? { loginPassword: loginPw.trim() } : {}),
+})}>
+          Save settings
         </button>
         {row.hasWebhook && (
           <button className="btn btn-secondary btn-sm" disabled={busy} onClick={() => window.confirm('Remove the saved Slack webhook?') && save({ slackWebhookUrl: '' })}>
@@ -268,6 +316,9 @@ export default function Digests() {
   }, []);
 
   useEffect(() => { load(); return () => clearInterval(pollRef.current); }, [load]);
+  useEffect(() => {
+  if (!genClient && delivery?.length) setGenClient(delivery[0].id);
+}, [delivery, genClient]);
 
   function pollForDrafts() {
     clearInterval(pollRef.current);
@@ -314,12 +365,12 @@ export default function Digests() {
                 </label>
                 <div className="controls-row" style={{ marginBottom: 0 }}>
                   <select className="field-input" style={{ width: 'auto' }} value={genClient} onChange={e => setGenClient(e.target.value)}>
-                    <option value="">All clients with weekly report ON</option>
                     {(delivery || []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                   <button
                     className="btn btn-sm"
-                    onClick={() => window.confirm('Create a fresh draft now? This replaces this week\'s existing draft for the chosen client(s) and uses GA4, Search Console and Claude.') && generate({ clientId: genClient, force: true })}
+                    disabled={!genClient}
+                    onClick={() => window.confirm("Create a fresh draft now? This replaces this week's existing draft for the chosen client and uses GA4, Search Console and Claude.") && generate({ clientId: genClient, force: true })}
                   >
                     Generate fresh draft now
                   </button>
